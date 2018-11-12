@@ -1,6 +1,8 @@
 
 package test;
 
+import java.util.Arrays;
+
 
 public class Test {
     public static final int IZMERS = 7;
@@ -16,7 +18,7 @@ public class Test {
                 mas[IZMERS-1-i+k][IZMERS-1-j] = IZMERS*2 - 1 - i;
             }
         }
-        
+
         for(int i = 0; i < IZMERS; i++){
             for(int j = 0; j < IZMERS; j++){
                 if(mas[i][j] < 10){
