@@ -7,10 +7,12 @@ package jtablepiemers;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Vector;
@@ -24,7 +26,6 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Tabula extends javax.swing.JPanel {
     
-    ChessPlayersList playersList = new ChessPlayersList();
     
     /**
      * Creates new form Tabula
@@ -40,7 +41,31 @@ public class Tabula extends javax.swing.JPanel {
 //        rapid.setEnabled(false);
 //        blitz.setEnabled(false);
 //        add.setEnabled(false);
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        try{
+            FileInputStream fis = new FileInputStream("chess");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            ChessPlayersList newList = (ChessPlayersList) ois.readObject();
+            ois.close();
+            
+            for(int i = 0; i < newList.size(); i++){
+                Vector player = new Vector();
                 
+                player.add(newList.get(i).getSurname());
+                player.add(newList.get(i).getName());
+                player.add(newList.get(i).getStandard());
+                player.add(newList.get(i).getRapid());
+                player.add(newList.get(i).getBlitz());
+                
+                model.addRow(player);
+            }
+        } catch (FileNotFoundException ex){
+            
+        } catch (IOException ex) {
+            Logger.getLogger(Tabula.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Tabula.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -238,6 +263,11 @@ public class Tabula extends javax.swing.JPanel {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             Vector row = new Vector();
             
+            FileInputStream fis = new FileInputStream("chess");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            ChessPlayersList newList = (ChessPlayersList) ois.readObject();
+            ois.close();
+            
             row.add(surname.getText());
             cp.setSurname(surname.getText());
             
@@ -257,15 +287,19 @@ public class Tabula extends javax.swing.JPanel {
             row.add(Integer.valueOf(blitz.getText()));
             cp.setBlitz(Integer.valueOf(blitz.getText()));
             
-            
-            
+            newList.add(cp);
+            oos.writeObject(newList);
             model.addRow(row);
             message.setText("Ieraksts ir pievienots!");
+            
+            oos.close();
         } catch (NumberFormatException ex){
             message.setText("Kaut kas nogaja greizi!");
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Tabula.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
+            Logger.getLogger(Tabula.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
             Logger.getLogger(Tabula.class.getName()).log(Level.SEVERE, null, ex);
         }
         
